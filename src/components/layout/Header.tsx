@@ -7,9 +7,9 @@ const Header = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center shadow-soft">
+    <header className="bg-white border-b border-gray-200 h-16 px-6 flex justify-between items-center shadow-soft">
       <div className="flex items-center flex-1">
-        <h1 className="text-2xl font-bold text-gray-900 mr-8">
+        <h1 className="text-xl font-bold text-gray-900 mr-8">
           Inventory Management
         </h1>
         
@@ -39,8 +39,8 @@ const Header = () => {
             className="flex items-center cursor-pointer group" 
             onClick={() => navigate('/profile')}
           >
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white mr-3 group-hover:scale-105 transition-transform duration-200">
-              <User size={18} />
+            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white mr-3 group-hover:scale-105 transition-transform duration-200">
+              <User size={16} />
             </div>
             <div className="hidden sm:block">
               <div className="text-sm font-semibold text-gray-900">{user?.name || 'User'}</div>

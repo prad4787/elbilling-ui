@@ -21,13 +21,13 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 hidden md:block overflow-y-auto shadow-soft">
-      <div className="py-6 px-6 border-b border-gray-100">
+      <div className="h-16 px-6 border-b border-gray-100 flex items-center">
         <Link to="/" className="flex items-center group">
-          <div className="h-10 w-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 group-hover:scale-105 transition-transform duration-200">
-            <Package className="h-6 w-6 text-white" />
+          <div className="h-8 w-8 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 group-hover:scale-105 transition-transform duration-200">
+            <Package className="h-5 w-5 text-white" />
           </div>
           <div>
-            <span className="text-xl font-bold text-gray-900">Inventory</span>
+            <span className="text-lg font-bold text-gray-900">Inventory</span>
             <div className="text-xs text-gray-500 font-medium">Management System</div>
           </div>
         </Link>
