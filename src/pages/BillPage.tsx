@@ -31,7 +31,16 @@ const BillPage: React.FC = () => {
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [deliveryDate, setDeliveryDate] = useState('');
   
-  const [items, setItems] = useState<BillItemRow[]>([]);
+  const [items, setItems] = useState<BillItemRow[]>([{
+      tempId: Date.now().toString(),
+      id: '',
+      stockId: '',
+      category: '',
+      quantity: 1,
+      price: 0,
+      total: 0,
+      measurements: {}
+    }]);
   const [total, setTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
