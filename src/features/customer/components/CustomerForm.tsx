@@ -94,7 +94,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       newErrors.address = 'Address is required';
     }
     
-    if (formData.avatar && !isValidUrl(formData.avatar)) {
+    // Only validate avatar URL if it's provided and we're in edit/view mode
+    if (formData.avatar && (mode === 'edit' || mode === 'view') && !isValidUrl(formData.avatar)) {
       newErrors.avatar = 'Please enter a valid URL';
     }
     
@@ -133,6 +134,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   };
   
   const isReadOnly = mode === 'view';
+  const isCreateMode = mode === 'create';
   
   // Filter out current customer from referrer options if in edit mode
   const referrerOptions = customers
@@ -183,38 +185,44 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         required
       />
       
-      <Input
-        id="avatar"
-        name="avatar"
-        type="text"
-        label="Avatar URL"
-        placeholder="Enter avatar image URL"
-        value={formData.avatar}
-        onChange={handleChange}
-        error={errors.avatar}
-        disabled={isReadOnly}
-      />
-      
-      <div className="mb-4">
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-          Description
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          rows={3}
-          placeholder="Enter customer description"
-          value={formData.description}
-          onChange={handleChange}
-          className={`
-            px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm w-full
-            placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-            ${errors.description ? 'border-red-500' : ''}
-          `}
-          disabled={isReadOnly}
-        />
-        {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
-      </div>
+      {/* Avatar and Description only shown in edit/view modes */}
+      {!isCreateMode && (
+        <>
+          <Input
+            id="avatar"
+            name="avatar"
+            type="text"
+            label="Avatar URL"
+            placeholder="Enter avatar image URL"
+            value={formData.avatar}
+            onChange={handleChange}
+            error={errors.avatar}
+            disabled={isReadOnly}
+          />
+          
+          <div className="mb-4">
+            <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              rows={3}
+              placeholder="Enter customer description"
+              value={formData.description}
+              onChange={handleChange}
+              className={`
+                px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm w-full
+                placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                transition-all duration-200 hover:border-gray-400
+                ${errors.description ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
+              `}
+              disabled={isReadOnly}
+            />
+            {errors.description && <p className="mt-2 text-sm text-red-600 font-medium">{errors.description}</p>}
+          </div>
+        </>
+      )}
       
       <SearchableSelect
         label="Referrer (Customer)"
