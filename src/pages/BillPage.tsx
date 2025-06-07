@@ -410,11 +410,11 @@ const BillPage: React.FC = () => {
                     return (
                       <React.Fragment key={item.tempId}>
                         {/* Main Item Row */}
-                        <tr className="hover:bg-white transition-colors group">
-                          <td className="py-3 px-4 text-sm text-gray-600 font-medium border-b border-gray-100 group-hover:border-gray-200">
+                        <tr>
+                          <td className="py-3 px-4 text-sm text-gray-600 font-medium border-b border-gray-100">
                             {index + 1}
                           </td>
-                          <td className="py-3 px-4 border-b border-gray-100 group-hover:border-gray-200">
+                          <td className="py-3 px-4 border-b border-gray-100">
                             <div className="w-48">
                               <SearchableSelect
                                 options={stocks.map(s => ({ value: s.id, label: s.name }))}
@@ -430,7 +430,7 @@ const BillPage: React.FC = () => {
                               />
                             </div>
                           </td>
-                          <td className="py-3 px-4 border-b border-gray-100 group-hover:border-gray-200">
+                          <td className="py-3 px-4 border-b border-gray-100">
                             {selectedStock && (
                               <div className="flex items-center space-x-2">
                                 <Button
@@ -453,7 +453,7 @@ const BillPage: React.FC = () => {
                               </div>
                             )}
                           </td>
-                          <td className="py-3 px-4 border-b border-gray-100 group-hover:border-gray-200">
+                          <td className="py-3 px-4 border-b border-gray-100">
                             <input
                               type="number"
                               value={item.quantity}
@@ -462,7 +462,7 @@ const BillPage: React.FC = () => {
                               className="w-20 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                           </td>
-                          <td className="py-3 px-4 border-b border-gray-100 group-hover:border-gray-200">
+                          <td className="py-3 px-4 border-b border-gray-100">
                             <input
                               type="number"
                               value={item.total}
@@ -473,7 +473,7 @@ const BillPage: React.FC = () => {
                               placeholder="Total amount"
                             />
                           </td>
-                          <td className="py-3 px-4 text-right border-b border-gray-100 group-hover:border-gray-200">
+                          <td className="py-3 px-4 text-right border-b border-gray-100">
                             <button
                               type="button"
                               onClick={() => removeRow(item.tempId)}
@@ -485,9 +485,9 @@ const BillPage: React.FC = () => {
                         </tr>
                         
                         {/* Description Row - seamlessly connected */}
-                        <tr className="hover:bg-white transition-colors group">
-                          <td className="py-2 px-4 border-b border-gray-200 group-hover:border-gray-300"></td>
-                          <td colSpan={5} className="py-2 px-4 border-b border-gray-200 group-hover:border-gray-300">
+                        <tr>
+                          <td className="py-2 px-4 border-b border-gray-200"></td>
+                          <td colSpan={5} className="py-2 px-4 border-b border-gray-200">
                             <input
                               type="text"
                               value={item.description || ''}
