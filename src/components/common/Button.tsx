@@ -1,6 +1,6 @@
 import React, { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'success' | 'danger' | 'outline';
+type ButtonVariant = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -20,23 +20,22 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-md transition-colors focus:outline-none';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variantStyles: Record<ButtonVariant, string> = {
-    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white',
-    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-800',
-    success: 'bg-green-600 hover:bg-green-700 text-white',
-    danger: 'bg-red-600 hover:bg-red-700 text-white',
-    outline: 'bg-transparent border border-gray-300 hover:bg-gray-50 text-gray-700'
+    primary: 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-soft hover:shadow-medium focus:ring-primary-500',
+    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-800 shadow-soft hover:shadow-medium focus:ring-gray-500',
+    success: 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-soft hover:shadow-medium focus:ring-green-500',
+    danger: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-soft hover:shadow-medium focus:ring-red-500',
+    warning: 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-soft hover:shadow-medium focus:ring-orange-500',
+    outline: 'bg-white border-2 border-gray-200 hover:border-primary-300 hover:bg-primary-50 text-gray-700 hover:text-primary-700 shadow-soft hover:shadow-medium focus:ring-primary-500'
   };
   
   const sizeStyles: Record<ButtonSize, string> = {
-    sm: 'text-xs px-2.5 py-1.5',
-    md: 'text-sm px-4 py-2',
+    sm: 'text-sm px-3 py-2',
+    md: 'text-sm px-4 py-2.5',
     lg: 'text-base px-6 py-3'
   };
-  
-  const disabledStyles = 'opacity-50 cursor-not-allowed';
   
   return (
     <button
@@ -44,7 +43,6 @@ const Button: React.FC<ButtonProps> = ({
         ${baseStyles}
         ${variantStyles[variant]}
         ${sizeStyles[size]}
-        ${disabled || isLoading ? disabledStyles : ''}
         ${className}
       `}
       disabled={disabled || isLoading}

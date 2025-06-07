@@ -56,33 +56,33 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-40 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={handleBackdropClick}
     >
       <div
         ref={modalRef}
-        className={`bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]} animate-fade-in-up`}
+        className={`bg-white rounded-2xl shadow-large w-full ${sizeClasses[size]} animate-slide-up border border-gray-200`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
           <Button
-            variant="secondary"
+            variant="outline"
             size="sm"
             onClick={onClose}
-            className="!p-1 !bg-transparent hover:!bg-gray-100"
+            className="!p-2 !bg-gray-50 hover:!bg-gray-100 border-0"
             aria-label="Close"
           >
-            <X size={20} />
+            <X size={18} />
           </Button>
         </div>
         
-        <div className="p-4 overflow-y-auto max-h-[calc(100vh-200px)]">
+        <div className="p-6 overflow-y-auto max-h-[calc(100vh-200px)]">
           {children}
         </div>
         
         {footer && (
-          <div className="p-4 border-t bg-gray-50 rounded-b-lg flex justify-end space-x-2">
+          <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end space-x-3">
             {footer}
           </div>
         )}
