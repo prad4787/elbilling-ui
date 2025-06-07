@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Upload, X } from 'lucide-react';
 import Input from '../../../components/common/Input';
 import Button from '../../../components/common/Button';
 import SearchableSelect from '../../../components/common/SearchableSelect';
@@ -29,6 +30,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [avatarPreview, setAvatarPreview] = useState<string>('');
   
   useEffect(() => {
     if (customer && (mode === 'edit' || mode === 'view')) {
@@ -40,6 +42,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         description: customer.description || '',
         referrerId: customer.referrerId || ''
       });
+      setAvatarPreview(customer.avatar || '');
     }
     
     const fetchCustomers = async () => {
@@ -65,6 +68,50 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     // Clear error when field is edited
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setErrors(prev => ({ ...prev, avatar: 'Please select a valid image file' }));
+        return;
+      }
+
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        setErrors(prev => ({ ...prev, avatar: 'File size must be less than 2MB' }));
+        return;
+      }
+
+      // Create preview and store file data
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setAvatarPreview(result);
+        setFormData(prev => ({
+          ...prev,
+          avatar: result
+        }));
+        // Clear any previous errors
+        setErrors(prev => ({ ...prev, avatar: '' }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatarPreview('');
+    setFormData(prev => ({
+      ...prev,
+      avatar: ''
+    }));
+    // Clear file input
+    const fileInput = document.getElementById('avatar-upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
     }
   };
   
@@ -94,22 +141,8 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       newErrors.address = 'Address is required';
     }
     
-    // Only validate avatar URL if it's provided and we're in edit/view mode
-    if (formData.avatar && (mode === 'edit' || mode === 'view') && !isValidUrl(formData.avatar)) {
-      newErrors.avatar = 'Please enter a valid URL';
-    }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-  
-  const isValidUrl = (url: string) => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -188,18 +221,66 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       {/* Avatar and Description only shown in edit/view modes */}
       {!isCreateMode && (
         <>
-          <Input
-            id="avatar"
-            name="avatar"
-            type="text"
-            label="Avatar URL"
-            placeholder="Enter avatar image URL"
-            value={formData.avatar}
-            onChange={handleChange}
-            error={errors.avatar}
-            disabled={isReadOnly}
-          />
+          {/* Avatar Upload */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Avatar
+            </label>
+            
+            <div className="flex items-start space-x-4">
+              {/* Avatar Preview */}
+              {avatarPreview && (
+                <div className="relative">
+                  <img
+                    src={avatarPreview}
+                    alt="Avatar Preview"
+                    className="w-20 h-20 rounded-xl object-cover border border-gray-200"
+                  />
+                  {!isReadOnly && (
+                    <button
+                      type="button"
+                      onClick={removeAvatar}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                    >
+                      <X size={12} />
+                    </button>
+                  )}
+                </div>
+              )}
+              
+              {/* Upload Area */}
+              {!isReadOnly && (
+                <div className="flex-1">
+                  <label htmlFor="avatar-upload" className="cursor-pointer">
+                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-blue-400 transition-colors">
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <Upload size={24} className="text-gray-400" />
+                        <span className="text-gray-600 font-medium">
+                          {avatarPreview ? 'Change Avatar' : 'Upload Avatar'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          PNG, JPG up to 2MB
+                        </span>
+                      </div>
+                    </div>
+                    <input
+                      id="avatar-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              )}
+            </div>
+            
+            {errors.avatar && (
+              <p className="mt-2 text-sm text-red-600 font-medium">{errors.avatar}</p>
+            )}
+          </div>
           
+          {/* Description */}
           <div className="mb-4">
             <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
               Description
