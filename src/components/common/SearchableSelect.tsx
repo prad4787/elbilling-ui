@@ -86,7 +86,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-y-auto">
+        <div className="absolute z-50 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-y-auto">
           {filteredOptions.length > 0 ? (
             filteredOptions.map((option) => (
               <div
