@@ -81,6 +81,16 @@ const MOCK_TRANSACTIONS: StockTransaction[] = [
   }
 ];
 
+// Helper function to safely format dates
+const formatDate = (dateValue: string | Date | undefined | null): string => {
+  if (!dateValue) return 'N/A';
+  
+  const date = new Date(dateValue);
+  if (isNaN(date.getTime())) return 'N/A';
+  
+  return format(date, 'dd/MM/yyyy');
+};
+
 const StockViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [stock, setStock] = useState<Stock | null>(null);
@@ -186,7 +196,7 @@ const StockViewPage: React.FC = () => {
                   <Calendar className="h-4 w-4 text-gray-500 mr-2" />
                   <span className="text-sm text-gray-600">Added:</span>
                   <span className="ml-2 font-medium text-gray-900">
-                    {format(new Date(stock.date), 'dd/MM/yyyy')}
+                    {formatDate(stock.date)}
                   </span>
                 </div>
                 {stock.hsCode && (
@@ -291,7 +301,7 @@ const StockViewPage: React.FC = () => {
               {transactions.map((transaction, index) => (
                 <tr key={`${transaction.date}-${index}`} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                    {format(new Date(transaction.date), 'dd/MM/yyyy')}
+                    {formatDate(transaction.date)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
