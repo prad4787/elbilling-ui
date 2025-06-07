@@ -129,8 +129,9 @@ const BillPage: React.FC = () => {
       if (item.tempId === tempId) {
         const updatedItem = { ...item, [field]: value };
         
-        if (field === 'quantity' || field === 'price') {
-          updatedItem.total = updatedItem.quantity * updatedItem.price;
+        // If updating total, calculate price based on quantity
+        if (field === 'total' && updatedItem.quantity > 0) {
+          updatedItem.price = updatedItem.total / updatedItem.quantity;
         }
         
         return updatedItem;
@@ -235,7 +236,7 @@ const BillPage: React.FC = () => {
     }
     
     for (const item of items) {
-      if (!item.stockId || !item.category || !item.quantity || !item.price) {
+      if (!item.stockId || !item.category || !item.quantity || !item.total) {
         toast.error('Please fill all required fields for each item');
         return false;
       }
@@ -384,11 +385,11 @@ const BillPage: React.FC = () => {
                     <th className="text-left py-3 px-4 font-semibold text-gray-700">Stock</th>
                     <th className="text-left py-3 px-4 font-semibold text-gray-700">Category</th>
                     <th className="text-left py-3 px-4 font-semibold text-gray-700">Qty</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Price</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Total</th>
                     <th className="text-right py-3 px-4 font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y-0">
                   {items.map((item, index) => {
                     const selectedStock = stocks.find(s => s.id === item.stockId);
                     const hasPreviousMeasurements = items.some((prevItem, prevIndex) => 
@@ -409,11 +410,11 @@ const BillPage: React.FC = () => {
                     return (
                       <React.Fragment key={item.tempId}>
                         {/* Main Item Row */}
-                        <tr className="hover:bg-white transition-colors border-b-0">
-                          <td className="py-3 px-4 text-sm text-gray-600 font-medium border-b-0">
+                        <tr className="hover:bg-white transition-colors group">
+                          <td className="py-3 px-4 text-sm text-gray-600 font-medium border-b border-gray-100 group-hover:border-gray-200">
                             {index + 1}
                           </td>
-                          <td className="py-3 px-4 border-b-0">
+                          <td className="py-3 px-4 border-b border-gray-100 group-hover:border-gray-200">
                             <div className="w-48">
                               <SearchableSelect
                                 options={stocks.map(s => ({ value: s.id, label: s.name }))}
@@ -429,7 +430,7 @@ const BillPage: React.FC = () => {
                               />
                             </div>
                           </td>
-                          <td className="py-3 px-4 border-b-0">
+                          <td className="py-3 px-4 border-b border-gray-100 group-hover:border-gray-200">
                             {selectedStock && (
                               <div className="flex items-center space-x-2">
                                 <Button
@@ -452,7 +453,7 @@ const BillPage: React.FC = () => {
                               </div>
                             )}
                           </td>
-                          <td className="py-3 px-4 border-b-0">
+                          <td className="py-3 px-4 border-b border-gray-100 group-hover:border-gray-200">
                             <input
                               type="number"
                               value={item.quantity}
@@ -461,23 +462,18 @@ const BillPage: React.FC = () => {
                               className="w-20 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                           </td>
-                          <td className="py-3 px-4 border-b-0">
-                            <div className="flex flex-col space-y-1">
-                              <input
-                                type="number"
-                                value={item.price}
-                                onChange={(e) => updateRow(item.tempId, 'price', parseFloat(e.target.value) || 0)}
-                                min="0"
-                                step="0.01"
-                                className="w-24 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                placeholder="Price"
-                              />
-                              <span className="text-xs text-gray-500">
-                                Total: {item.total.toFixed(2)}
-                              </span>
-                            </div>
+                          <td className="py-3 px-4 border-b border-gray-100 group-hover:border-gray-200">
+                            <input
+                              type="number"
+                              value={item.total}
+                              onChange={(e) => updateRow(item.tempId, 'total', parseFloat(e.target.value) || 0)}
+                              min="0"
+                              step="0.01"
+                              className="w-28 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              placeholder="Total amount"
+                            />
                           </td>
-                          <td className="py-3 px-4 text-right border-b-0">
+                          <td className="py-3 px-4 text-right border-b border-gray-100 group-hover:border-gray-200">
                             <button
                               type="button"
                               onClick={() => removeRow(item.tempId)}
@@ -488,16 +484,16 @@ const BillPage: React.FC = () => {
                           </td>
                         </tr>
                         
-                        {/* Description Row */}
-                        <tr className="hover:bg-white transition-colors">
-                          <td className="py-2 px-4"></td>
-                          <td colSpan={5} className="py-2 px-4">
+                        {/* Description Row - seamlessly connected */}
+                        <tr className="hover:bg-white transition-colors group">
+                          <td className="py-2 px-4 border-b border-gray-200 group-hover:border-gray-300"></td>
+                          <td colSpan={5} className="py-2 px-4 border-b border-gray-200 group-hover:border-gray-300">
                             <input
                               type="text"
                               value={item.description || ''}
                               onChange={(e) => updateRow(item.tempId, 'description', e.target.value)}
                               placeholder="Add description for this item..."
-                              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white transition-all duration-200"
                             />
                           </td>
                         </tr>
