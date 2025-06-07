@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Package, Users, FileText, BarChart3, List, Scissors, Clock } from 'lucide-react';
+import { Home, Package, Users, FileText, BarChart3, List, Scissors, Clock, Building2 } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -29,6 +29,9 @@ const Sidebar = () => {
     if (path === '/item-status' && (location.pathname.startsWith('/item-status/') || location.pathname === '/item-status')) {
       return true;
     }
+    if (path === '/organization' && (location.pathname.startsWith('/organization/') || location.pathname === '/organization')) {
+      return true;
+    }
     if (path === '/reports' && (location.pathname.startsWith('/reports/') || location.pathname === '/reports')) {
       return true;
     }
@@ -44,6 +47,7 @@ const Sidebar = () => {
     { name: 'Categories', icon: <List size={20} />, path: '/categories', color: 'text-pink-500' },
     { name: 'Tailor Counters', icon: <Scissors size={20} />, path: '/tailor-counters', color: 'text-yellow-600' },
     { name: 'Item Status', icon: <Clock size={20} />, path: '/item-status', color: 'text-info-500' },
+    { name: 'Organization', icon: <Building2 size={20} />, path: '/organization', color: 'text-indigo-500' },
     { name: 'Reports', icon: <BarChart3 size={20} />, path: '/reports', color: 'text-gray-500' }
   ];
 

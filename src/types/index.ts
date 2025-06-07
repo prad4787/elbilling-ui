@@ -87,6 +87,18 @@ export interface Bill {
   updatedAt: string;
 }
 
+// Organization types
+export interface Organization {
+  id: string;
+  name: string;
+  phones: string[];
+  emails: string[];
+  address: string;
+  logo?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 // Tailor Counter types
 export interface TailorCounter {
   id: string;

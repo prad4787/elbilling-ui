@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Plus, X, Copy } from 'lucide-react';
+import { Plus, X, Copy, Building2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -8,11 +8,12 @@ import Select from '../components/common/Select';
 import SearchableSelect from '../components/common/SearchableSelect';
 import MeasurementModal from '../components/common/MeasurementModal';
 import MeasurementSelectionModal from '../components/common/MeasurementSelectionModal';
-import { Customer, Stock, BillItem, CATEGORY_MEASUREMENTS } from '../types';
+import { Customer, Stock, BillItem, CATEGORY_MEASUREMENTS, Organization } from '../types';
 import { getCustomers } from '../services/customerService';
 import { getStocks } from '../services/stockService';
 import { getBills } from '../services/billService';
 import { createBill } from '../services/billService';
+import { getOrganization } from '../services/organizationService';
 
 interface BillItemRow extends BillItem {
   tempId: string;
@@ -22,6 +23,7 @@ const BillPage: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [previousBills, setPreviousBills] = useState<any[]>([]);
+  const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(false);
   
   const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -70,12 +72,14 @@ const BillPage: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [customersData, stocksData] = await Promise.all([
+      const [customersData, stocksData, orgData] = await Promise.all([
         getCustomers(),
-        getStocks()
+        getStocks(),
+        getOrganization()
       ]);
       setCustomers(customersData);
       setStocks(stocksData);
+      setOrganization(orgData);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to load data');
@@ -275,15 +279,45 @@ const BillPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-6">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Create Bill</h2>
+    <div className="max-w-7xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="bg-white rounded-2xl shadow-soft border border-gray-100 p-6">
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Create New Bill</h1>
+            <p className="text-gray-600 mt-1">Generate a new bill for your customer</p>
+          </div>
+          
+          {/* Organization Info */}
+          {organization ? (
+            <div className="text-right bg-gradient-to-br from-primary-50 to-purple-50 p-4 rounded-xl border border-primary-100">
+              <div className="flex items-center justify-end mb-2">
+                <Building2 size={20} className="text-primary-600 mr-2" />
+                <h3 className="font-bold text-gray-900">{organization.name}</h3>
+              </div>
+              <div className="text-sm text-gray-600 space-y-1">
+                {organization.phones.length > 0 && (
+                  <p>📞 {organization.phones[0]}</p>
+                )}
+                {organization.emails.length > 0 && (
+                  <p>✉️ {organization.emails[0]}</p>
+                )}
+                <p>📍 {organization.address}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-right bg-orange-50 p-4 rounded-xl border border-orange-200">
+              <p className="text-orange-800 font-medium">⚠️ Organization not set up</p>
+              <p className="text-sm text-orange-600">Please configure organization details</p>
+            </div>
+          )}
+        </div>
         
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="space-y-4">
               <SearchableSelect
-                label="Customer"
+                label="Customer *"
                 options={customers.map(c => ({ value: c.id, label: c.name }))}
                 value={selectedCustomer}
                 onChange={setSelectedCustomer}
@@ -291,7 +325,7 @@ const BillPage: React.FC = () => {
               />
               
               <Input
-                label="Bill Number"
+                label="Bill Number *"
                 value={billNumber}
                 onChange={(e) => setBillNumber(e.target.value)}
                 placeholder="Enter bill number"
@@ -299,10 +333,10 @@ const BillPage: React.FC = () => {
               />
             </div>
             
-            <div>
+            <div className="space-y-4">
               <Input
                 type="date"
-                label="Date"
+                label="Date *"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
@@ -310,7 +344,7 @@ const BillPage: React.FC = () => {
               
               <Input
                 type="date"
-                label="Delivery Date"
+                label="Delivery Date *"
                 value={deliveryDate}
                 onChange={(e) => setDeliveryDate(e.target.value)}
                 required
@@ -318,195 +352,210 @@ const BillPage: React.FC = () => {
             </div>
           </div>
           
-          <div className="mb-6">
-            <Button
-              type="button"
-              onClick={addRow}
-              icon={<Plus size={16} />}
-              variant="outline"
-            >
-              Add Item
-            </Button>
-          </div>
-          
-          <div className="overflow-x-auto mb-6">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    S.N
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stock
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quantity
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {items.map((item, index) => {
-                  const selectedStock = stocks.find(s => s.id === item.stockId);
-                  const hasPreviousMeasurements = items.some((prevItem, prevIndex) => 
-                    prevIndex < index && 
-                    prevItem.category === selectedStock?.category && 
-                    Object.keys(prevItem.measurements).length > 0
-                  ) || (
-                    selectedCustomer && 
-                    selectedStock && 
-                    previousBills.some(bill => 
-                      bill.items.some(billItem => 
-                        billItem.category === selectedStock.category && 
-                        Object.keys(billItem.measurements).length > 0
+          {/* Items Section */}
+          <div className="bg-gray-50 rounded-xl p-6 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Bill Items</h3>
+              <Button
+                type="button"
+                onClick={addRow}
+                icon={<Plus size={16} />}
+                variant="outline"
+                size="sm"
+              >
+                Add Item
+              </Button>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">S.N</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Stock</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Category</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Qty</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Price</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Total</th>
+                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Description</th>
+                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {items.map((item, index) => {
+                    const selectedStock = stocks.find(s => s.id === item.stockId);
+                    const hasPreviousMeasurements = items.some((prevItem, prevIndex) => 
+                      prevIndex < index && 
+                      prevItem.category === selectedStock?.category && 
+                      Object.keys(prevItem.measurements).length > 0
+                    ) || (
+                      selectedCustomer && 
+                      selectedStock && 
+                      previousBills.some(bill => 
+                        bill.items.some(billItem => 
+                          billItem.category === selectedStock.category && 
+                          Object.keys(billItem.measurements).length > 0
+                        )
                       )
-                    )
-                  );
-                  
-                  return (
-                    <tr key={item.tempId}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {index + 1}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <SearchableSelect
-                          options={stocks.map(s => ({ value: s.id, label: s.name }))}
-                          value={item.stockId}
-                          onChange={(value) => {
-                            const stock = stocks.find(s => s.id === value);
-                            updateRow(item.tempId, 'stockId', value);
-                            if (stock) {
-                              updateRow(item.tempId, 'category', stock.category);
-                            }
-                          }}
-                          placeholder="Select stock"
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {selectedStock && (
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              onClick={() => handleMeasurements(item.tempId, selectedStock.category)}
-                              variant={Object.keys(item.measurements).length > 0 ? 'primary' : 'outline'}
-                              size="sm"
-                            >
-                              {selectedStock.category}
-                            </Button>
-                            {hasPreviousMeasurements && Object.keys(item.measurements).length === 0 && (
-                              <Button
-                                onClick={() => handleCopyMeasurements(item.tempId, selectedStock.category)}
-                                variant="outline"
-                                size="sm"
-                                title="Copy measurements"
-                              >
-                                <Copy size={16} />
-                              </Button>
-                            )}
+                    );
+                    
+                    return (
+                      <tr key={item.tempId} className="hover:bg-white transition-colors">
+                        <td className="py-4 px-4 text-sm text-gray-600 font-medium">
+                          {index + 1}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="w-48">
+                            <SearchableSelect
+                              options={stocks.map(s => ({ value: s.id, label: s.name }))}
+                              value={item.stockId}
+                              onChange={(value) => {
+                                const stock = stocks.find(s => s.id === value);
+                                updateRow(item.tempId, 'stockId', value);
+                                if (stock) {
+                                  updateRow(item.tempId, 'category', stock.category);
+                                }
+                              }}
+                              placeholder="Select stock"
+                            />
                           </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Input
-                          type="number"
-                          value={item.quantity}
-                          onChange={(e) => updateRow(item.tempId, 'quantity', parseInt(e.target.value) || 0)}
-                          min="1"
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Input
-                          type="number"
-                          value={item.price}
-                          onChange={(e) => updateRow(item.tempId, 'price', parseFloat(e.target.value) || 0)}
-                          min="0"
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {item.total}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Input
-                          value={item.description || ''}
-                          onChange={(e) => updateRow(item.tempId, 'description', e.target.value)}
-                          placeholder="Description"
-                        />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <button
-                          type="button"
-                          onClick={() => removeRow(item.tempId)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <X size={20} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </td>
+                        <td className="py-4 px-4">
+                          {selectedStock && (
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                onClick={() => handleMeasurements(item.tempId, selectedStock.category)}
+                                variant={Object.keys(item.measurements).length > 0 ? 'primary' : 'outline'}
+                                size="sm"
+                              >
+                                {selectedStock.category}
+                              </Button>
+                              {hasPreviousMeasurements && Object.keys(item.measurements).length === 0 && (
+                                <Button
+                                  onClick={() => handleCopyMeasurements(item.tempId, selectedStock.category)}
+                                  variant="outline"
+                                  size="sm"
+                                  title="Copy measurements"
+                                >
+                                  <Copy size={16} />
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-4 px-4">
+                          <Input
+                            type="number"
+                            value={item.quantity}
+                            onChange={(e) => updateRow(item.tempId, 'quantity', parseInt(e.target.value) || 0)}
+                            min="1"
+                            className="w-20"
+                          />
+                        </td>
+                        <td className="py-4 px-4">
+                          <Input
+                            type="number"
+                            value={item.price}
+                            onChange={(e) => updateRow(item.tempId, 'price', parseFloat(e.target.value) || 0)}
+                            min="0"
+                            className="w-24"
+                          />
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="font-semibold text-gray-900">{item.total}</span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <Input
+                            value={item.description || ''}
+                            onChange={(e) => updateRow(item.tempId, 'description', e.target.value)}
+                            placeholder="Description"
+                            className="w-32"
+                          />
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <button
+                            type="button"
+                            onClick={() => removeRow(item.tempId)}
+                            className="text-red-500 hover:text-red-700 p-1 rounded-lg hover:bg-red-50 transition-colors"
+                          >
+                            <X size={18} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              
+              {items.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <p>No items added yet. Click "Add Item" to get started.</p>
+                </div>
+              )}
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div></div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">Total:</span>
-                <span className="text-gray-900 font-medium">{total}</span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">Discount:</span>
-                <Input
-                  type="number"
-                  value={discount}
-                  onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
-                  min="0"
-                  className="w-32"
-                />
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">Grand Total:</span>
-                <span className="text-gray-900 font-medium">{grandTotal}</span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">Advance:</span>
-                <Input
-                  type="number"
-                  value={advance}
-                  onChange={(e) => setAdvance(parseFloat(e.target.value) || 0)}
-                  min="0"
-                  className="w-32"
-                />
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">Due:</span>
-                <span className="text-gray-900 font-medium">{due}</span>
+          {/* Totals Section */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div></div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="font-medium text-gray-700">Subtotal:</span>
+                  <span className="text-lg font-bold text-gray-900">{total.toFixed(2)}</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-gray-700">Discount:</span>
+                  <div className="w-32">
+                    <Input
+                      type="number"
+                      value={discount}
+                      onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+                      min="0"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center py-2 border-t border-gray-100">
+                  <span className="text-lg font-bold text-gray-900">Grand Total:</span>
+                  <span className="text-xl font-bold text-primary-600">{grandTotal.toFixed(2)}</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-gray-700">Advance:</span>
+                  <div className="w-32">
+                    <Input
+                      type="number"
+                      value={advance}
+                      onChange={(e) => setAdvance(parseFloat(e.target.value) || 0)}
+                      min="0"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center py-2 border-t border-gray-100">
+                  <span className="text-lg font-bold text-gray-900">Due Amount:</span>
+                  <span className="text-xl font-bold text-orange-600">{due.toFixed(2)}</span>
+                </div>
               </div>
             </div>
           </div>
           
-          <div className="mt-6 flex justify-end">
+          <div className="flex justify-end space-x-4 pt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.history.back()}
+            >
+              Cancel
+            </Button>
             <Button
               type="submit"
               isLoading={loading}
+              disabled={items.length === 0}
             >
               Create Bill
             </Button>

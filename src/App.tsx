@@ -15,6 +15,7 @@ import BillViewPage from './pages/BillViewPage';
 import CategoryPage from './pages/CategoryPage';
 import TailorCounterPage from './pages/TailorCounterPage';
 import ItemStatusPage from './pages/ItemStatusPage';
+import OrganizationSetupPage from './pages/OrganizationSetupPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -32,7 +33,7 @@ function App() {
       
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
-          <Route path="/" element={<Navigate to="/dashboard\" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/stocks" element={<StockPage />} />
           <Route path="/stocks/:id" element={<StockViewPage />} />
@@ -44,6 +45,7 @@ function App() {
           <Route path="/categories" element={<CategoryPage />} />
           <Route path="/tailor-counters" element={<TailorCounterPage />} />
           <Route path="/item-status" element={<ItemStatusPage />} />
+          <Route path="/organization" element={<OrganizationSetupPage />} />
         </Route>
       </Route>
       
