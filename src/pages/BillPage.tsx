@@ -385,8 +385,6 @@ const BillPage: React.FC = () => {
                     <th className="text-left py-3 px-4 font-semibold text-gray-700">Category</th>
                     <th className="text-left py-3 px-4 font-semibold text-gray-700">Qty</th>
                     <th className="text-left py-3 px-4 font-semibold text-gray-700">Price</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Total</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Description</th>
                     <th className="text-right py-3 px-4 font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
@@ -409,88 +407,99 @@ const BillPage: React.FC = () => {
                     );
                     
                     return (
-                      <tr key={item.tempId} className="hover:bg-white transition-colors">
-                        <td className="py-4 px-4 text-sm text-gray-600 font-medium">
-                          {index + 1}
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="w-48">
-                            <SearchableSelect
-                              options={stocks.map(s => ({ value: s.id, label: s.name }))}
-                              value={item.stockId}
-                              onChange={(value) => {
-                                const stock = stocks.find(s => s.id === value);
-                                updateRow(item.tempId, 'stockId', value);
-                                if (stock) {
-                                  updateRow(item.tempId, 'category', stock.category);
-                                }
-                              }}
-                              placeholder="Select stock"
-                            />
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          {selectedStock && (
-                            <div className="flex items-center space-x-2">
-                              <Button
-                                onClick={() => handleMeasurements(item.tempId, selectedStock.category)}
-                                variant={Object.keys(item.measurements).length > 0 ? 'primary' : 'outline'}
-                                size="sm"
-                              >
-                                {selectedStock.category}
-                              </Button>
-                              {hasPreviousMeasurements && Object.keys(item.measurements).length === 0 && (
-                                <Button
-                                  onClick={() => handleCopyMeasurements(item.tempId, selectedStock.category)}
-                                  variant="outline"
-                                  size="sm"
-                                  title="Copy measurements"
-                                >
-                                  <Copy size={16} />
-                                </Button>
-                              )}
+                      <React.Fragment key={item.tempId}>
+                        {/* Main Item Row */}
+                        <tr className="hover:bg-white transition-colors">
+                          <td className="py-4 px-4 text-sm text-gray-600 font-medium">
+                            {index + 1}
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="w-48">
+                              <SearchableSelect
+                                options={stocks.map(s => ({ value: s.id, label: s.name }))}
+                                value={item.stockId}
+                                onChange={(value) => {
+                                  const stock = stocks.find(s => s.id === value);
+                                  updateRow(item.tempId, 'stockId', value);
+                                  if (stock) {
+                                    updateRow(item.tempId, 'category', stock.category);
+                                  }
+                                }}
+                                placeholder="Select stock"
+                              />
                             </div>
-                          )}
-                        </td>
-                        <td className="py-4 px-4">
-                          <Input
-                            type="number"
-                            value={item.quantity}
-                            onChange={(e) => updateRow(item.tempId, 'quantity', parseInt(e.target.value) || 0)}
-                            min="1"
-                            className="w-20"
-                          />
-                        </td>
-                        <td className="py-4 px-4">
-                          <Input
-                            type="number"
-                            value={item.price}
-                            onChange={(e) => updateRow(item.tempId, 'price', parseFloat(e.target.value) || 0)}
-                            min="0"
-                            className="w-24"
-                          />
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="font-semibold text-gray-900">{item.total}</span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <Input
-                            value={item.description || ''}
-                            onChange={(e) => updateRow(item.tempId, 'description', e.target.value)}
-                            placeholder="Description"
-                            className="w-32"
-                          />
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <button
-                            type="button"
-                            onClick={() => removeRow(item.tempId)}
-                            className="text-red-500 hover:text-red-700 p-1 rounded-lg hover:bg-red-50 transition-colors"
-                          >
-                            <X size={18} />
-                          </button>
-                        </td>
-                      </tr>
+                          </td>
+                          <td className="py-4 px-4">
+                            {selectedStock && (
+                              <div className="flex items-center space-x-2">
+                                <Button
+                                  onClick={() => handleMeasurements(item.tempId, selectedStock.category)}
+                                  variant={Object.keys(item.measurements).length > 0 ? 'primary' : 'outline'}
+                                  size="sm"
+                                >
+                                  {selectedStock.category}
+                                </Button>
+                                {hasPreviousMeasurements && Object.keys(item.measurements).length === 0 && (
+                                  <Button
+                                    onClick={() => handleCopyMeasurements(item.tempId, selectedStock.category)}
+                                    variant="outline"
+                                    size="sm"
+                                    title="Copy measurements"
+                                  >
+                                    <Copy size={16} />
+                                  </Button>
+                                )}
+                              </div>
+                            )}
+                          </td>
+                          <td className="py-4 px-4">
+                            <Input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) => updateRow(item.tempId, 'quantity', parseInt(e.target.value) || 0)}
+                              min="1"
+                              className="w-20"
+                            />
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="flex flex-col space-y-1">
+                              <Input
+                                type="number"
+                                value={item.price}
+                                onChange={(e) => updateRow(item.tempId, 'price', parseFloat(e.target.value) || 0)}
+                                min="0"
+                                className="w-24"
+                                placeholder="Price"
+                              />
+                              <span className="text-xs text-gray-500">
+                                Total: {item.total.toFixed(2)}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <button
+                              type="button"
+                              onClick={() => removeRow(item.tempId)}
+                              className="text-red-500 hover:text-red-700 p-1 rounded-lg hover:bg-red-50 transition-colors"
+                            >
+                              <X size={18} />
+                            </button>
+                          </td>
+                        </tr>
+                        
+                        {/* Description Row */}
+                        <tr className="bg-gray-25">
+                          <td className="py-2 px-4"></td>
+                          <td colSpan={5} className="py-2 px-4">
+                            <Input
+                              value={item.description || ''}
+                              onChange={(e) => updateRow(item.tempId, 'description', e.target.value)}
+                              placeholder="Add description for this item..."
+                              className="w-full text-sm"
+                            />
+                          </td>
+                        </tr>
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
