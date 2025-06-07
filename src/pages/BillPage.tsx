@@ -409,11 +409,11 @@ const BillPage: React.FC = () => {
                     return (
                       <React.Fragment key={item.tempId}>
                         {/* Main Item Row */}
-                        <tr className="hover:bg-white transition-colors">
-                          <td className="py-4 px-4 text-sm text-gray-600 font-medium">
+                        <tr className="hover:bg-white transition-colors border-b-0">
+                          <td className="py-3 px-4 text-sm text-gray-600 font-medium border-b-0">
                             {index + 1}
                           </td>
-                          <td className="py-4 px-4">
+                          <td className="py-3 px-4 border-b-0">
                             <div className="w-48">
                               <SearchableSelect
                                 options={stocks.map(s => ({ value: s.id, label: s.name }))}
@@ -429,7 +429,7 @@ const BillPage: React.FC = () => {
                               />
                             </div>
                           </td>
-                          <td className="py-4 px-4">
+                          <td className="py-3 px-4 border-b-0">
                             {selectedStock && (
                               <div className="flex items-center space-x-2">
                                 <Button
@@ -452,23 +452,24 @@ const BillPage: React.FC = () => {
                               </div>
                             )}
                           </td>
-                          <td className="py-4 px-4">
-                            <Input
+                          <td className="py-3 px-4 border-b-0">
+                            <input
                               type="number"
                               value={item.quantity}
                               onChange={(e) => updateRow(item.tempId, 'quantity', parseInt(e.target.value) || 0)}
                               min="1"
-                              className="w-20"
+                              className="w-20 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                           </td>
-                          <td className="py-4 px-4">
+                          <td className="py-3 px-4 border-b-0">
                             <div className="flex flex-col space-y-1">
-                              <Input
+                              <input
                                 type="number"
                                 value={item.price}
                                 onChange={(e) => updateRow(item.tempId, 'price', parseFloat(e.target.value) || 0)}
                                 min="0"
-                                className="w-24"
+                                step="0.01"
+                                className="w-24 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 placeholder="Price"
                               />
                               <span className="text-xs text-gray-500">
@@ -476,7 +477,7 @@ const BillPage: React.FC = () => {
                               </span>
                             </div>
                           </td>
-                          <td className="py-4 px-4 text-right">
+                          <td className="py-3 px-4 text-right border-b-0">
                             <button
                               type="button"
                               onClick={() => removeRow(item.tempId)}
@@ -488,14 +489,15 @@ const BillPage: React.FC = () => {
                         </tr>
                         
                         {/* Description Row */}
-                        <tr className="bg-gray-25">
+                        <tr className="hover:bg-white transition-colors">
                           <td className="py-2 px-4"></td>
                           <td colSpan={5} className="py-2 px-4">
-                            <Input
+                            <input
+                              type="text"
                               value={item.description || ''}
                               onChange={(e) => updateRow(item.tempId, 'description', e.target.value)}
                               placeholder="Add description for this item..."
-                              className="w-full text-sm"
+                              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
                             />
                           </td>
                         </tr>
@@ -526,12 +528,14 @@ const BillPage: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-gray-700">Discount:</span>
                   <div className="w-32">
-                    <Input
+                    <input
                       type="number"
                       value={discount}
                       onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
                       min="0"
+                      step="0.01"
                       placeholder="0.00"
+                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                 </div>
@@ -544,12 +548,14 @@ const BillPage: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-gray-700">Advance:</span>
                   <div className="w-32">
-                    <Input
+                    <input
                       type="number"
                       value={advance}
                       onChange={(e) => setAdvance(parseFloat(e.target.value) || 0)}
                       min="0"
+                      step="0.01"
                       placeholder="0.00"
+                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                 </div>
