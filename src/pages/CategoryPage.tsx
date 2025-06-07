@@ -232,18 +232,18 @@ const CategoryPage: React.FC = () => {
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
                   onKeyPress={(e) => e.key === 'Enter' && handleAddCategory()}
                 />
-                {errors.category && (
-                  <p className="mt-2 text-sm text-red-600 font-medium">{errors.category}</p>
-                )}
               </div>
               <Button
                 onClick={handleAddCategory}
                 icon={<Plus size={16} />}
-                className="px-6"
+                className="flex-shrink-0 w-20"
               >
                 Add
               </Button>
             </div>
+            {errors.category && (
+              <p className="mt-2 text-sm text-red-600 font-medium">{errors.category}</p>
+            )}
           </div>
 
           {/* Categories List */}
@@ -333,18 +333,18 @@ const CategoryPage: React.FC = () => {
                       className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
                       onKeyPress={(e) => e.key === 'Enter' && handleAddMeasurement()}
                     />
-                    {errors.measurement && (
-                      <p className="mt-2 text-sm text-red-600 font-medium">{errors.measurement}</p>
-                    )}
                   </div>
                   <Button
                     onClick={handleAddMeasurement}
                     icon={<Plus size={16} />}
-                    className="px-6"
+                    className="flex-shrink-0 w-20"
                   >
                     Add
                   </Button>
                 </div>
+                {errors.measurement && (
+                  <p className="mt-2 text-sm text-red-600 font-medium">{errors.measurement}</p>
+                )}
               </div>
 
               {/* Measurements List */}
