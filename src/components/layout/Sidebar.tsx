@@ -5,7 +5,35 @@ const Sidebar = () => {
   const location = useLocation();
   
   const isActive = (path: string) => {
-    return location.pathname === path;
+    // Check for exact match
+    if (location.pathname === path) {
+      return true;
+    }
+    
+    // Check for parent path matches
+    if (path === '/bills' && (location.pathname.startsWith('/bills/') || location.pathname === '/bills')) {
+      return true;
+    }
+    if (path === '/customers' && (location.pathname.startsWith('/customers/') || location.pathname === '/customers')) {
+      return true;
+    }
+    if (path === '/stocks' && (location.pathname.startsWith('/stocks/') || location.pathname === '/stocks')) {
+      return true;
+    }
+    if (path === '/categories' && (location.pathname.startsWith('/categories/') || location.pathname === '/categories')) {
+      return true;
+    }
+    if (path === '/tailor-counters' && (location.pathname.startsWith('/tailor-counters/') || location.pathname === '/tailor-counters')) {
+      return true;
+    }
+    if (path === '/item-status' && (location.pathname.startsWith('/item-status/') || location.pathname === '/item-status')) {
+      return true;
+    }
+    if (path === '/reports' && (location.pathname.startsWith('/reports/') || location.pathname === '/reports')) {
+      return true;
+    }
+    
+    return false;
   };
   
   const navItems = [
